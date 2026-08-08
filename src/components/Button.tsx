@@ -2,7 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// Framer Motion redefines these handlers, so the native DOM versions are dropped.
+type ConflictingMotionProps = 'onAnimationStart' | 'onAnimationEnd' | 'onDrag' | 'onDragStart' | 'onDragEnd';
+
+interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, ConflictingMotionProps> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
@@ -58,7 +62,7 @@ const Button: React.FC<ButtonProps> = ({
         whileHover={{ scale: disabled ? 1 : 1.02 }}
         whileTap={{ scale: disabled ? 1 : 0.98 }}
         className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`}
-        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        {...(props as React.ComponentProps<typeof motion.a>)}
       >
         {content}
       </motion.a>
@@ -71,7 +75,7 @@ const Button: React.FC<ButtonProps> = ({
       whileTap={{ scale: disabled ? 1 : 0.98 }}
       disabled={disabled || isLoading}
       className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`}
-      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      {...(props as React.ComponentProps<typeof motion.button>)}
     >
       {content}
     </motion.button>

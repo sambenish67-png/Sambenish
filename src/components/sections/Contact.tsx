@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 import SectionHeader from '../SectionHeader';
@@ -6,6 +6,7 @@ import { Card } from '../Card';
 import Button from '../Button';
 import { Mail, Phone, MapPin, Linkedin, Github } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/utils/data';
+import { submitContactForm } from '@/utils/contact';
 
 const Contact: React.FC = () => {
   const { isDark } = useTheme();
@@ -16,25 +17,41 @@ const Contact: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => () => {
+    if (resetTimeoutRef.current !== undefined) {
+      clearTimeout(resetTimeoutRef.current);
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    setError(null);
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
-    // Simulate form submission
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await submitContactForm(formData);
       setSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
-
-      // Reset submitted state after 3 seconds
-      setTimeout(() => setSubmitted(false), 3000);
-    }, 1500);
+      resetTimeoutRef.current = setTimeout(() => setSubmitted(false), 3000);
+    } catch (submitError) {
+      console.error('Contact form submission failed:', submitError);
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : 'Something went wrong while sending your message. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const contactInfo = [
@@ -212,6 +229,18 @@ const Contact: React.FC = () => {
                   >
                     {submitted ? 'Message Sent! ✓' : 'Send Message'}
                   </Button>
+
+                  {/* Error Message */}
+                  {error && (
+                    <motion.p
+                      role="alert"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-center text-red-400 font-medium"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
 
                   {/* Success Message */}
                   {submitted && (

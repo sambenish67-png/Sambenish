@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { scrollToSelector } from '@/utils/types';
 
 const Navbar: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
@@ -17,11 +18,8 @@ const Navbar: React.FC = () => {
   ];
 
   const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsOpen(false);
-    }
+    scrollToSelector(href);
+    setIsOpen(false);
   };
 
   return (

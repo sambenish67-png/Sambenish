@@ -1,6 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { useCountUpOnView } from '@/hooks/useCountUpOnView';
+import { mutedText } from '@/utils/styles';
 
 interface ProgressBarProps {
   percentage: number;
@@ -14,34 +16,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   animated = true,
 }) => {
   const { isDark } = useTheme();
-  const [displayPercentage, setDisplayPercentage] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && animated) {
-          const interval = setInterval(() => {
-            setDisplayPercentage((prev) => {
-              if (prev >= percentage) {
-                clearInterval(interval);
-                return percentage;
-              }
-              return prev + (percentage / 30);
-            });
-          }, 20);
-          return () => clearInterval(interval);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [percentage, animated]);
+  const [displayPercentage, ref] = useCountUpOnView<HTMLDivElement>(percentage, { animated });
 
   return (
     <div ref={ref} className="w-full">
@@ -77,35 +52,8 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   color = 'url(#gradient)',
   label,
 }) => {
-  const [displayPercentage, setDisplayPercentage] = useState(0);
   const { isDark } = useTheme();
-  const ref = useRef<SVGSVGElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const interval = setInterval(() => {
-            setDisplayPercentage((prev) => {
-              if (prev >= percentage) {
-                clearInterval(interval);
-                return percentage;
-              }
-              return prev + (percentage / 30);
-            });
-          }, 20);
-          return () => clearInterval(interval);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [percentage]);
+  const [displayPercentage, ref] = useCountUpOnView<SVGSVGElement>(percentage);
 
   const circumference = 2 * Math.PI * (size / 2 - 5);
   const offset = circumference - (displayPercentage / 100) * circumference;
@@ -156,7 +104,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
         </text>
       </svg>
       {label && (
-        <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+        <p className={`text-sm font-medium ${mutedText(isDark)}`}>
           {label}
         </p>
       )}

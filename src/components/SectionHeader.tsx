@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { revealDown, revealFade } from '@/utils/motion';
+import { gradientHeading, mutedText } from '@/utils/styles';
 
 interface SectionHeaderProps {
   title: string;
@@ -24,19 +26,10 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className={`mb-12 ${alignClass[align]}`}
-    >
+    <motion.div {...revealDown()} className={`mb-12 ${alignClass[align]}`}>
       {subtitle && (
         <motion.span
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
+          {...revealFade({ delay: 0.1 })}
           className="inline-block px-4 py-1.5 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-sm font-semibold mb-4"
         >
           {subtitle}
@@ -44,24 +37,18 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
       )}
 
       <motion.h2
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.2 }}
-        className={`text-4xl md:text-5xl font-bold mb-4 bg-gradient-aurora bg-clip-text text-transparent`}
+        {...revealFade({ delay: 0.2 })}
+        className={`text-4xl md:text-5xl font-bold mb-4 ${gradientHeading}`}
       >
         {title}
       </motion.h2>
 
       {description && (
         <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className={`text-lg max-w-2xl ${
-            isDark ? 'text-slate-400' : 'text-slate-600'
-          } ${align === 'center' ? 'mx-auto' : ''}`}
+          {...revealFade({ delay: 0.3 })}
+          className={`text-lg max-w-2xl ${mutedText(isDark)} ${
+            align === 'center' ? 'mx-auto' : ''
+          }`}
         >
           {description}
         </motion.p>

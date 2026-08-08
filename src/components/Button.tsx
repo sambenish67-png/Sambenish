@@ -1,8 +1,8 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
@@ -52,27 +52,22 @@ const Button: React.FC<ButtonProps> = ({
     children
   );
 
+  const sharedProps = {
+    whileHover: { scale: disabled ? 1 : 1.02 },
+    whileTap: { scale: disabled ? 1 : 0.98 },
+    className: `${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`,
+  };
+
   if (as === 'a') {
     return (
-      <motion.a
-        whileHover={{ scale: disabled ? 1 : 1.02 }}
-        whileTap={{ scale: disabled ? 1 : 0.98 }}
-        className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`}
-        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-      >
+      <motion.a {...sharedProps} {...(props as HTMLMotionProps<'a'>)}>
         {content}
       </motion.a>
     );
   }
 
   return (
-    <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.98 }}
-      disabled={disabled || isLoading}
-      className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`}
-      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-    >
+    <motion.button {...sharedProps} disabled={disabled || isLoading} {...props}>
       {content}
     </motion.button>
   );

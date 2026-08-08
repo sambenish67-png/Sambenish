@@ -37,8 +37,9 @@ export const useIntersectionObserver = (
   useEffect(() => {
     if (!ref.current) return;
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry?.isIntersecting) {
         entry.target.classList.add('animate-slide-up');
       }
     }, {

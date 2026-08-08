@@ -2,27 +2,36 @@ import React, { useState } from 'react';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { scrollToElement } from '@/utils/scroll';
+import { gradientHeading, iconButtonSurface } from '@/utils/styles';
+
+const NAV_LINKS = [
+  { name: 'Home', id: 'home' },
+  { name: 'About', id: 'about' },
+  { name: 'Education', id: 'education' },
+  { name: 'Skills', id: 'skills' },
+  { name: 'Projects', id: 'projects' },
+  { name: 'Contact', id: 'contact' },
+];
 
 const Navbar: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
-  const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Education', href: '#education' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Contact', href: '#contact' },
-  ];
-
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsOpen(false);
-    }
+  const goToSection = (id: string) => {
+    scrollToElement(id);
+    setIsOpen(false);
   };
+
+  const themeToggle = (
+    <button
+      onClick={toggleTheme}
+      aria-label="Toggle theme"
+      className={`p-2 rounded-lg transition-colors ${iconButtonSurface(isDark)}`}
+    >
+      {isDark ? <Sun size={20} /> : <Moon size={20} />}
+    </button>
+  );
 
   return (
     <nav
@@ -38,17 +47,17 @@ const Navbar: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="text-2xl font-bold bg-gradient-aurora bg-clip-text text-transparent"
+            className={`text-2xl font-bold ${gradientHeading}`}
           >
             SB
           </motion.div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {NAV_LINKS.map((link) => (
               <button
                 key={link.name}
-                onClick={() => scrollToSection(link.href)}
+                onClick={() => goToSection(link.id)}
                 className={`text-sm font-medium transition-colors hover:text-cyan-400 ${
                   isDark ? 'text-slate-300' : 'text-slate-700'
                 }`}
@@ -56,37 +65,16 @@ const Navbar: React.FC = () => {
                 {link.name}
               </button>
             ))}
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-lg transition-colors ${
-                isDark
-                  ? 'bg-slate-800 hover:bg-slate-700'
-                  : 'bg-slate-100 hover:bg-slate-200'
-              }`}
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            {themeToggle}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-4">
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-lg transition-colors ${
-                isDark
-                  ? 'bg-slate-800 hover:bg-slate-700'
-                  : 'bg-slate-100 hover:bg-slate-200'
-              }`}
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            {themeToggle}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className={`p-2 rounded-lg transition-colors ${
-                isDark
-                  ? 'bg-slate-800 hover:bg-slate-700'
-                  : 'bg-slate-100 hover:bg-slate-200'
-              }`}
+              aria-label="Toggle navigation"
+              className={`p-2 rounded-lg transition-colors ${iconButtonSurface(isDark)}`}
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -100,10 +88,10 @@ const Navbar: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className={`md:hidden pb-4 space-y-2 ${isDark ? 'bg-slate-800' : 'bg-slate-50'}`}
           >
-            {navLinks.map((link) => (
+            {NAV_LINKS.map((link) => (
               <button
                 key={link.name}
-                onClick={() => scrollToSection(link.href)}
+                onClick={() => goToSection(link.id)}
                 className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
                   isDark
                     ? 'hover:bg-slate-700 text-slate-300'

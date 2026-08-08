@@ -11,7 +11,20 @@ export const PORTFOLIO_DATA = {
   twitter: 'https://twitter.com/sambhenish',
 };
 
-export const ABOUT_DATA = {
+export type SocialPlatform = 'linkedin' | 'github' | 'email';
+
+export const SOCIAL_LINKS: { platform: SocialPlatform; label: string; href: string }[] = [
+  { platform: 'linkedin', label: 'LinkedIn', href: PORTFOLIO_DATA.linkedin },
+  { platform: 'github', label: 'GitHub', href: PORTFOLIO_DATA.github },
+  { platform: 'email', label: 'Email', href: `mailto:${PORTFOLIO_DATA.email}` },
+];
+
+export const ABOUT_DATA: {
+  summary: string;
+  description: string;
+  objective: string;
+  stats: { label: string; value: number | string }[];
+} = {
   summary: 'I am Sam Benish, currently pursuing a Bachelor of Technology in Artificial Intelligence & Data Science at Adhithya Engineering College. With a strong foundation from my Diploma in Computer Science Engineering, I am passionate about leveraging technology to solve real-world problems.',
   description: 'I am passionate about Artificial Intelligence, software engineering, mobile application development, and creating visually appealing user interfaces. I enjoy solving real-world problems through technology and continuously improving my programming and design skills.',
   objective: 'My ambition is to become a Software Engineer specializing in AI-powered applications, cross-platform mobile development, and modern web technologies.',

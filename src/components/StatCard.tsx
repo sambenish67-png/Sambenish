@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { useCountUpOnView } from '@/hooks/useCountUpOnView';
+import { revealScale } from '@/utils/motion';
+import { cardSurface, gradientHeading, mutedText } from '@/utils/styles';
 
 interface AnimatedCounterProps {
   value: number;
@@ -15,29 +18,15 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   prefix = '',
   duration = 2,
 }) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const increment = value / (duration * 60);
-    let current = 0;
-
-    const interval = setInterval(() => {
-      current += increment;
-      if (current >= value) {
-        setCount(value);
-        clearInterval(interval);
-      } else {
-        setCount(Math.floor(current));
-      }
-    }, 16);
-
-    return () => clearInterval(interval);
-  }, [value, duration]);
+  const [count, ref] = useCountUpOnView<HTMLSpanElement>(value, {
+    steps: duration * 60,
+    intervalMs: 16,
+  });
 
   return (
-    <span>
+    <span ref={ref}>
       {prefix}
-      {count.toLocaleString()}
+      {Math.floor(count).toLocaleString()}
       {suffix}
     </span>
   );
@@ -63,17 +52,10 @@ const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay }}
+      {...revealScale({ delay })}
       className={`
         relative rounded-2xl backdrop-blur-md p-6 text-center
-        ${
-          isDark
-            ? 'bg-slate-800/50 border border-slate-700/50'
-            : 'bg-white/50 border border-slate-200/50'
-        }
+        ${cardSurface(isDark)}
         hover:shadow-neon transition-all duration-300
       `}
     >
@@ -81,18 +63,14 @@ const StatCard: React.FC<StatCardProps> = ({
         <div className="text-4xl mb-4 flex justify-center">{icon}</div>
       )}
 
-      <div className="text-3xl md:text-4xl font-bold bg-gradient-aurora bg-clip-text text-transparent mb-2">
+      <div className={`text-3xl md:text-4xl font-bold mb-2 ${gradientHeading}`}>
         {isNumeric ? (
           <AnimatedCounter value={value as number} suffix={suffix} />
         ) : (
           value
         )}
       </div>
-      <p
-        className={`text-sm font-medium ${
-          isDark ? 'text-slate-400' : 'text-slate-600'
-        }`}
-      >
+      <p className={`text-sm font-medium ${mutedText(isDark)}`}>
         {label}
       </p>
     </motion.div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { sanitizeHref } from '@/utils/security';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline';
@@ -53,12 +54,17 @@ const Button: React.FC<ButtonProps> = ({
   );
 
   if (as === 'a') {
+    const anchorProps = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+    const href = sanitizeHref(anchorProps.href);
+
     return (
       <motion.a
         whileHover={{ scale: disabled ? 1 : 1.02 }}
         whileTap={{ scale: disabled ? 1 : 0.98 }}
         className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`}
-        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        {...anchorProps}
+        href={href}
+        rel={anchorProps.target === '_blank' ? 'noopener noreferrer' : anchorProps.rel}
       >
         {content}
       </motion.a>

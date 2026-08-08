@@ -15,7 +15,7 @@ export const ABOUT_DATA = {
   summary: 'I am Sam Benish, currently pursuing a Bachelor of Technology in Artificial Intelligence & Data Science at Adhithya Engineering College. With a strong foundation from my Diploma in Computer Science Engineering, I am passionate about leveraging technology to solve real-world problems.',
   description: 'I am passionate about Artificial Intelligence, software engineering, mobile application development, and creating visually appealing user interfaces. I enjoy solving real-world problems through technology and continuously improving my programming and design skills.',
   objective: 'My ambition is to become a Software Engineer specializing in AI-powered applications, cross-platform mobile development, and modern web technologies.',
-      stats: [],
+  stats: [] as { label: string; value: string }[],
 };
 
 export const SKILLS_DATA = [

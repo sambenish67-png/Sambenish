@@ -7,6 +7,12 @@ import Button from '../Button';
 import { Mail, Phone, MapPin, Linkedin, Github } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/utils/data';
 
+const NAME_MAX = 100;
+const EMAIL_MAX = 254;
+const MESSAGE_MAX = 2000;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const FIELD_LIMITS = { name: NAME_MAX, email: EMAIL_MAX, message: MESSAGE_MAX };
+
 const Contact: React.FC = () => {
   const { isDark } = useTheme();
   const [formData, setFormData] = useState({
@@ -16,14 +22,36 @@ const Contact: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const limit = FIELD_LIMITS[name as keyof typeof FIELD_LIMITS] ?? MESSAGE_MAX;
+    setFormData(prev => ({ ...prev, [name]: value.slice(0, limit) }));
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
+
+    if (name.length < 2 || name.length > NAME_MAX) {
+      setError(`Please enter a name between 2 and ${NAME_MAX} characters.`);
+      return;
+    }
+    if (!EMAIL_PATTERN.test(email) || email.length > EMAIL_MAX) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    if (message.length < 10 || message.length > MESSAGE_MAX) {
+      setError(`Please enter a message between 10 and ${MESSAGE_MAX} characters.`);
+      return;
+    }
+
+    setError(null);
     setIsLoading(true);
 
     // Simulate form submission
@@ -150,6 +178,9 @@ const Contact: React.FC = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      minLength={2}
+                      maxLength={NAME_MAX}
+                      autoComplete="name"
                       className={`w-full px-4 py-3 rounded-lg border transition-all focus:outline-none focus:scale-105 ${
                         isDark
                           ? 'bg-slate-700/50 border-slate-600 focus:border-cyan-400'
@@ -171,6 +202,8 @@ const Contact: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      maxLength={EMAIL_MAX}
+                      autoComplete="email"
                       className={`w-full px-4 py-3 rounded-lg border transition-all focus:outline-none focus:scale-105 ${
                         isDark
                           ? 'bg-slate-700/50 border-slate-600 focus:border-cyan-400'
@@ -191,6 +224,8 @@ const Contact: React.FC = () => {
                       value={formData.message}
                       onChange={handleChange}
                       required
+                      minLength={10}
+                      maxLength={MESSAGE_MAX}
                       rows={5}
                       className={`w-full px-4 py-3 rounded-lg border transition-all focus:outline-none focus:scale-105 resize-none ${
                         isDark
@@ -212,6 +247,13 @@ const Contact: React.FC = () => {
                   >
                     {submitted ? 'Message Sent! ✓' : 'Send Message'}
                   </Button>
+
+                  {/* Validation Error */}
+                  {error && (
+                    <p role="alert" className="text-center text-red-400 font-medium">
+                      {error}
+                    </p>
+                  )}
 
                   {/* Success Message */}
                   {submitted && (

@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 import Button from '../Button';
 import { Download, MessageCircle, Zap } from 'lucide-react';
+import { loop } from '@/utils/motion';
+import { scrollToElement } from '@/utils/scroll';
+import { gradientHeading, mutedText, sectionSurface, strongText } from '@/utils/styles';
 
 const Hero: React.FC = () => {
   const { isDark } = useTheme();
@@ -20,9 +23,7 @@ const Hero: React.FC = () => {
   return (
     <section
       id="home"
-      className={`relative min-h-screen flex items-center justify-center overflow-hidden pt-20 ${
-        isDark ? 'bg-slate-900' : 'bg-white'
-      }`}
+      className={`relative min-h-screen flex items-center justify-center overflow-hidden pt-20 ${sectionSurface(isDark)}`}
       onMouseMove={handleMouseMove}
     >
       {/* Animated background */}
@@ -42,11 +43,7 @@ const Hero: React.FC = () => {
               x: [0, Math.random() * 30 - 15, 0],
               opacity: [0.6, 1, 0.6],
             }}
-            transition={{
-              duration: 3 + i,
-              repeat: Infinity,
-              delay: i * 0.2,
-            }}
+            transition={loop(3 + i, i * 0.2)}
             style={{
               left: `${20 + i * 15}%`,
               top: `${30 + i * 10}%`,
@@ -65,25 +62,15 @@ const Hero: React.FC = () => {
           {/* Profile Image with Glow */}
           <motion.div
             className="flex justify-center mb-8"
-            animate={{
-              scale: [1, 1.02, 1],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-            }}
+            animate={{ scale: [1, 1.02, 1] }}
+            transition={loop(3)}
           >
             <div className="relative w-40 h-40 md:w-48 md:h-48">
               {/* Glowing border */}
               <motion.div
                 className="absolute inset-0 rounded-full bg-gradient-aurora opacity-75 blur-2xl"
-                animate={{
-                  opacity: [0.5, 1, 0.5],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                }}
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={loop(3)}
               />
 
               {/* Profile image */}
@@ -107,7 +94,7 @@ const Hero: React.FC = () => {
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-4">
               <span className="text-white">Hey, I'm</span>
-              <span className="block bg-gradient-aurora bg-clip-text text-transparent">
+              <span className={`block ${gradientHeading}`}>
                 Sam Benish
               </span>
             </h1>
@@ -119,9 +106,7 @@ const Hero: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            <h2 className={`text-2xl md:text-3xl font-semibold ${
-              isDark ? 'text-slate-300' : 'text-slate-700'
-            }`}>
+            <h2 className={`text-2xl md:text-3xl font-semibold ${strongText(isDark)}`}>
               AI & Data Science Student | Diploma Graduate in Computer Science Engineering (CSE)
             </h2>
           </motion.div>
@@ -131,9 +116,7 @@ const Hero: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className={`text-lg md:text-xl max-w-2xl mx-auto ${
-              isDark ? 'text-slate-400' : 'text-slate-600'
-            }`}
+            className={`text-lg md:text-xl max-w-2xl mx-auto ${mutedText(isDark)}`}
           >
             Building innovative mobile apps, intelligent AI solutions, and beautiful user experiences with passion and creativity.
           </motion.p>
@@ -149,7 +132,7 @@ const Hero: React.FC = () => {
               variant="primary"
               size="lg"
               className="gap-2"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => scrollToElement('contact')}
             >
               <MessageCircle size={20} />
               Contact Me
@@ -158,7 +141,7 @@ const Hero: React.FC = () => {
               variant="outline"
               size="lg"
               className="gap-2"
-              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => scrollToElement('projects')}
             >
               <Zap size={20} />
               View Projects
@@ -177,7 +160,7 @@ const Hero: React.FC = () => {
           <motion.div
             className="pt-8"
             animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(2)}
           >
             <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-500'} mb-2`}>
               Scroll to explore
@@ -190,7 +173,7 @@ const Hero: React.FC = () => {
                   isDark ? 'bg-slate-500' : 'bg-slate-400'
                 }`}
                 animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                transition={loop(1.5)}
               />
             </div>
           </motion.div>

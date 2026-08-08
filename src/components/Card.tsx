@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { revealUp } from '@/utils/motion';
+import { cardSurface } from '@/utils/styles';
 
 interface CardProps {
   children: React.ReactNode;
@@ -14,18 +16,11 @@ export const Card: React.FC<CardProps> = ({ children, className = '', hover = tr
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay }}
+      {...revealUp({ delay, duration: 0.5 })}
       whileHover={hover ? { scale: 1.02, y: -5 } : {}}
       className={`
         relative rounded-2xl backdrop-blur-md transition-all duration-300
-        ${
-          isDark
-            ? 'bg-slate-800/50 border border-slate-700/50 hover:border-cyan-400/50'
-            : 'bg-white/50 border border-slate-200/50 hover:border-cyan-400/50'
-        }
+        ${cardSurface(isDark)} hover:border-cyan-400/50
         ${hover ? 'hover:shadow-neon' : ''}
         ${className}
       `}
@@ -51,10 +46,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay }}
+      {...revealUp({ delay, duration: 0.5 })}
       whileHover={{ scale: 1.02, y: -5 }}
       className={`
         relative rounded-xl overflow-hidden backdrop-blur-2xl

@@ -3,7 +3,12 @@ import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 import { sanitizeHref } from '@/utils/security';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// framer-motion redefines these handlers, so they can't be forwarded from the DOM prop types.
+type MotionConflictingProps = 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration' | 'onDrag' | 'onDragStart' | 'onDragEnd';
+
+type AnchorProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, MotionConflictingProps>;
+
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, MotionConflictingProps> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
@@ -54,7 +59,7 @@ const Button: React.FC<ButtonProps> = ({
   );
 
   if (as === 'a') {
-    const anchorProps = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+    const anchorProps = props as AnchorProps;
     const href = sanitizeHref(anchorProps.href);
 
     return (
@@ -77,7 +82,7 @@ const Button: React.FC<ButtonProps> = ({
       whileTap={{ scale: disabled ? 1 : 0.98 }}
       disabled={disabled || isLoading}
       className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`}
-      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      {...props}
     >
       {content}
     </motion.button>

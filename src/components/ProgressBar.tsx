@@ -20,7 +20,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && animated) {
+        if (entry?.isIntersecting && animated) {
           const interval = setInterval(() => {
             setDisplayPercentage((prev) => {
               if (prev >= percentage) {
@@ -84,7 +84,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           const interval = setInterval(() => {
             setDisplayPercentage((prev) => {
               if (prev >= percentage) {

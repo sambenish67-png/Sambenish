@@ -1,16 +1,36 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { readStoredValue, writeStoredValue } from '@/utils/storage';
 
-export type ThemeMode =
-  | 'dark'
-  | 'light'
-  | 'cyberpunk'
-  | 'ocean'
-  | 'sunset'
-  | 'forest'
-  | 'minimal'
-  | 'aurora'
-  | 'neural'
-  | 'glass';
+export const THEME_MODES = [
+  'dark',
+  'light',
+  'cyberpunk',
+  'ocean',
+  'sunset',
+  'forest',
+  'minimal',
+  'aurora',
+  'neural',
+  'glass',
+] as const;
+
+export type ThemeMode = (typeof THEME_MODES)[number];
+
+const THEME_STORAGE_KEY = 'themeMode';
+
+const isThemeMode = (value: string | null): value is ThemeMode =>
+  value !== null && (THEME_MODES as readonly string[]).includes(value);
+
+const prefersDarkColorScheme = (): boolean => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return true;
+
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  } catch (error) {
+    console.warn('Unable to read the preferred color scheme:', error);
+    return true;
+  }
+};
 
 interface ThemeContextType {
   isDark: boolean;
@@ -23,18 +43,12 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('themeMode') as ThemeMode;
-      if (
-        saved &&
-        ['dark', 'light', 'cyberpunk', 'ocean', 'sunset', 'forest', 'minimal', 'aurora', 'neural', 'glass'].includes(saved)
-      ) {
-        return saved;
-      }
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      return isDark ? 'dark' : 'light';
+    const saved = readStoredValue(THEME_STORAGE_KEY);
+    if (isThemeMode(saved)) return saved;
+    if (saved !== null) {
+      console.warn(`Ignoring unknown persisted theme "${saved}".`);
     }
-    return 'dark';
+    return prefersDarkColorScheme() ? 'dark' : 'light';
   });
 
   const isDark =
@@ -118,30 +132,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         break;
     }
     
-    localStorage.setItem('themeMode', themeMode);
+    writeStoredValue(THEME_STORAGE_KEY, themeMode);
   }, [themeMode]);
 
   const toggleTheme = () => {
     setThemeMode((current) => {
-      const themes: ThemeMode[] = [
-        'dark',
-        'light',
-        'cyberpunk',
-        'ocean',
-        'sunset',
-        'forest',
-        'minimal',
-        'aurora',
-        'neural',
-        'glass',
-      ];
-      const currentIndex = themes.indexOf(current);
-      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % themes.length;
-      return themes[nextIndex] as ThemeMode;
+      const currentIndex = THEME_MODES.indexOf(current);
+      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % THEME_MODES.length;
+      return THEME_MODES[nextIndex] as ThemeMode;
     });
   };
 
   const setTheme = (theme: ThemeMode) => {
+    if (!isThemeMode(theme)) {
+      throw new Error(`Unsupported theme "${theme}". Expected one of: ${THEME_MODES.join(', ')}.`);
+    }
     setThemeMode(theme);
   };
 

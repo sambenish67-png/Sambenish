@@ -96,11 +96,26 @@ export const animationVariants = {
 };
 
 // Scroll utilities
-export const scrollToElement = (elementId: string) => {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+export const scrollToElement = (elementId: string): boolean =>
+  scrollToSelector(`#${elementId}`);
+
+export const scrollToSelector = (selector: string): boolean => {
+  let element: Element | null;
+
+  try {
+    element = document.querySelector(selector);
+  } catch (error) {
+    console.error(`Invalid scroll target selector "${selector}":`, error);
+    return false;
   }
+
+  if (!element) {
+    console.warn(`Scroll target "${selector}" was not found in the document.`);
+    return false;
+  }
+
+  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  return true;
 };
 
 // Data utility functions

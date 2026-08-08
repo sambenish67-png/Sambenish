@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 import Button from '../Button';
 import { Download, MessageCircle, Zap } from 'lucide-react';
+import { scrollToElement } from '@/utils/types';
 
 const Hero: React.FC = () => {
   const { isDark } = useTheme();
@@ -149,7 +150,7 @@ const Hero: React.FC = () => {
               variant="primary"
               size="lg"
               className="gap-2"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => scrollToElement('contact')}
             >
               <MessageCircle size={20} />
               Contact Me
@@ -158,7 +159,7 @@ const Hero: React.FC = () => {
               variant="outline"
               size="lg"
               className="gap-2"
-              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => scrollToElement('projects')}
             >
               <Zap size={20} />
               View Projects
